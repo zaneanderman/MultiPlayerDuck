@@ -24,10 +24,10 @@ class Player(pyglet.sprite.Sprite):
 #	super(FadingRect, self).__init__
 
 player1 = Player(rightbird, 200, screen.height/2)
-player1.controls = {"left":pyglet.window.key.LEFT, "up":pyglet.window.key.UP, "right":pyglet.window.key.RIGHT, "shove":pyglet.window.key.PAGEDOWN}
+player1.controls = {"left":pyglet.window.key.J, "up":pyglet.window.key.I, "right":pyglet.window.key.L, "shove":pyglet.window.key.SLASH}
 player1.direction = "right"
 player2 = Player(leftbird, 300, screen.height/2)
-player2.controls = {"left":pyglet.window.key.A, "up":pyglet.window.key.W, "right":pyglet.window.key.D, "shove":pyglet.window.key.E}
+player2.controls = {"left":pyglet.window.key.D, "up":pyglet.window.key.R, "right":pyglet.window.key.G, "shove":pyglet.window.key.Z}
 player2.direction = "left"
 
 gravity = 0.5
