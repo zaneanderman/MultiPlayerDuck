@@ -53,10 +53,10 @@ platforms.append(shapes.Rectangle(10, 130, 10, 1, batch=platformbatch, color=(0,
 platforms.append(shapes.Rectangle(0, 2, 1, 150, batch=platformbatch, color=(0,34,0)))
 
 def iscolliding(rect1, rect2):
-	if (rect1.x + rect1.width > rect2.x and    # rect1. right edge past rect2. left
-		rect1.x < rect2.x + rect2.width and    # rect1. left edge past rect2. right
-		rect1.y + rect1.height > rect2.y and    # rect1. top edge past rect2. bottom
-		rect1.y < rect2.y + rect2.height):      # rect1. bottom edge past rect2. top
+	if (rect1.x + rect1.width > rect2.x and
+		rect1.x < rect2.x + rect2.width and
+		rect1.y + rect1.height > rect2.y and
+		rect1.y < rect2.y + rect2.height):  
 		return True
 
 def update(dt):
@@ -67,25 +67,34 @@ def update(dt):
 		otherplayer = otherplayer[0]
 		player.y += player.vy
 		player.onground = False
-		for platform in platforms:
-			if iscolliding(player, platform):
-				if player.vy < 0:
-					player.y = platform.y + platform.height
-					player.onground = True
-					player.vy = 0
-				else:
-					player.y = platform.y - player.height
-					player.vy = 0
+		isfalling = (player.vy < 0)
+		redo = True #this is so you will be pushed out of platforms continually until you aren't in any
+		while redo:
+			redo = False
+			for platform in platforms:
+				if iscolliding(player, platform):
+					if isfalling:
+						player.y = platform.y + platform.height
+						player.onground = True
+						player.vy = 0
+					else:
+						player.y = platform.y - player.height
+						player.vy = 0
 
 		player.x += player.vx
-		for platform in platforms:
-			if iscolliding(player, platform):
-				if player.vx < 0:
-					player.x = platform.x + platform.width
-					player.vx = 0
-				else:
-					player.x = platform.x - player.width
-					player.vx = 0
+		ismovingleft = (player.vx < 0)
+		redo = True #this is so you will be pushed out of platforms continually until you aren't in any
+		while redo:
+			redo = False
+			for platform in platforms:
+				if iscolliding(player, platform):
+					redo = True
+					if ismovingleft:
+						player.x = platform.x + platform.width
+						player.vx = 0
+					else:
+						player.x = platform.x - player.width
+						player.vx = 0
 
 		if keys[player.controls["up"]] and player.onground:
 			player.vy = 10
@@ -111,9 +120,9 @@ def update(dt):
 				attackrect = shapes.Rectangle(player.x-38, player.y-10, 30, 40, color=(255,0,0))
 			drawcache.append(attackrect)
 			if iscolliding(otherplayer, attackrect):
-				otherplayer.timeshit += 1
 				otherplayer.vy = 5*(1+(otherplayer.timeshit*percentperhit/100))
 				otherplayer.vx = {"left":-5, "right":5}[player.direction]*(1+otherplayer.timeshit*percentperhit/100)
+				otherplayer.timeshit += 1
 
 		player.attackcooldown -= 1
 		if player.onground:
