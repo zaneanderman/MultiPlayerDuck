@@ -31,6 +31,8 @@ player2.controls = {"left":pyglet.window.key.A, "up":pyglet.window.key.W, "right
 player2.direction = "left"
 
 gravity = 0.5
+friction = 0.05
+percentperhit = 3
 platformbatch = pyglet.graphics.Batch()
 platforms = []
 drawcache = []
@@ -43,9 +45,12 @@ platforms.append(shapes.Rectangle(60, 250, 20, 20, batch=platformbatch, color=(2
 platforms.append(shapes.Rectangle(-155, 150, 40, 60, batch=platformbatch, color=(3215,255,255)))
 platforms.append(shapes.Rectangle(-156, 151, 40, 140, batch=platformbatch, color=(4215,255,255)))
 platforms.append(shapes.Rectangle(-159, 152, 40, 290, batch=platformbatch, color=(4215,255,255)))
-platforms.append(shapes.Rectangle(120, 50, 450, 50, batch=platformbatch, color=(215,1215,255)))
+platforms.append(shapes.Rectangle(100, 50, 470, 50, batch=platformbatch, color=(215,1215,255)))
 platforms.append(shapes.Rectangle(555, 130, 20, 20, batch=platformbatch, color=(115,255,251234)))
 platforms.append(shapes.Rectangle(555, 370, 20, 20, batch=platformbatch, color=(115,255,251234)))
+platforms.append(shapes.Rectangle(400, 430, 75, 1, batch=platformbatch, color=(0,35,0)))
+platforms.append(shapes.Rectangle(10, 130, 10, 1, batch=platformbatch, color=(0,34,0)))
+platforms.append(shapes.Rectangle(0, 2, 1, 150, batch=platformbatch, color=(0,34,0)))
 
 def iscolliding(rect1, rect2):
 	if (rect1.x + rect1.width > rect2.x and    # rect1. right edge past rect2. left
@@ -107,10 +112,15 @@ def update(dt):
 			drawcache.append(attackrect)
 			if iscolliding(otherplayer, attackrect):
 				otherplayer.timeshit += 1
-				otherplayer.vy = 5*(1+(otherplayer.timeshit/100))
-				otherplayer.vx = {"left":-5, "right":5}[player.direction]*(1+otherplayer.timeshit/100)
+				otherplayer.vy = 5*(1+(otherplayer.timeshit*percentperhit/100))
+				otherplayer.vx = {"left":-5, "right":5}[player.direction]*(1+otherplayer.timeshit*percentperhit/100)
 
 		player.attackcooldown -= 1
+		if player.onground:
+			if player.vx < 0:
+				player.vx = min(player.vx+friction, 0)
+			elif player.vx > 0:
+				player.vx = max(player.vx-friction, 0)
 		player.vy -= gravity
 		player.vy = max(-10, player.vy)
 	if player1.y < 0:
