@@ -19,6 +19,8 @@ class Player(pyglet.sprite.Sprite):
 		self.controls = None
 		self.direction = None
 		self.timeshit = 0
+		self.doublejump = True
+		self.helduplastframe = False
 
 #class FadingRect(shapes.Rectangle):
 #	super(FadingRect, self).__init__
@@ -76,6 +78,7 @@ def update(dt):
 					if isfalling:
 						player.y = platform.y + platform.height
 						player.onground = True
+						player.doublejump = True
 						player.vy = 0
 					else:
 						player.y = platform.y - player.height
@@ -96,9 +99,12 @@ def update(dt):
 						player.x = platform.x - player.width
 						player.vx = 0
 
-		if keys[player.controls["up"]] and player.onground:
+		if keys[player.controls["up"]] and (player.onground or (player.doublejump and not player.helduplastframe)):
 			player.vy = 10
-
+			if not player.onground:
+				player.doublejump = False
+		player.helduplastframe = keys[player.controls["up"]]
+ 	
 		if keys[player.controls["left"]] and not keys[player.controls["right"]]:
 			player.direction = "left"
 			player.image = leftbird
